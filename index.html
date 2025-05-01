@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./my-icon/style.css">
+</head>
+<body>
+    <div id="nav">
+        <div id="calendar" class="app-block app-component">
+            <span id="day"></span>
+            <span id="weather-data">
+                <span id="weather"><img src="http://image.nmc.cn/assets/img/w/40x40/3/0.png"></span>
+                <span id="temperature">30℃</span>
+            </span>
+        </div>
+        <div id="timetable" class="app-component">
+            <!-- <span class="timetable-group">
+                <span class="lesson app-block">升</span>
+                <span class="lesson app-block">语</span>
+            </span>
+            <span class="timetable-group">
+                <span class="lesson app-block">英</span>
+                <span class="lesson app-block">英</span>
+            </span> -->
+        </div>
+        <div id="tools" class="app-component">
+            <span class="app-block btn" onclick="window.open('./timer.html')"><i class="icon-stopwatch"></i></span>
+            <span class="app-block btn" onclick="window.open('./random.html')"><i class="icon-dice"></i></span>
+        </div>
+        <div id="countdown" class="app-component app-block">
+            <span id="date-name">某日</span>
+            <span id="day-number">0</span>
+        </div>
+        <div id="toggle" class="app-component app-block" onclick="document.getElementById('nav').classList.toggle('hidden')">
+            <i class="icon-circle-up"></i>
+        </div>
+    </div>
+    <script src="./js/script.js" type="module"></script>
+    <script type="module">
+        const {ipcRenderer}=require("electron");
+        function matchElement(parent,child){
+            parent=document.querySelectorAll(parent);
+            child=(typeof child==="string")?document.querySelector(child):child;
+            let parentElement=child.parentElement;
+            while(parentElement){
+                if(Array.from(parent).includes(parentElement)) return true;
+                parentElement=parentElement.parentElement;
+            }
+            return false;
+        }
+        window.addEventListener("mousemove",event=>{
+            if(matchElement(".app-component",event.target)||event.target.className=="app-component"){
+                ipcRenderer.send("set-ignore",false);
+            }else{
+                ipcRenderer.send("set-ignore",true);
+            }
+        })
+        ipcRenderer.send("set-ignore",true);
+    </script>
+</body>
+</html>

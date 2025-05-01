@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机学号生成器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+        
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 380px;
+        }
+        
+        h1 {
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 1.5rem;
+        }
+        
+        .number-display {
+            font-size: 3.5rem;
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            color: #333;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-horizontal {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .input-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .input-field {
+            height: 40px;
+            padding: 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 100px;
+            box-sizing: border-box;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        #startStop {
+            background-color: #00C851; /* 开始按钮为绿色 */
+        }
+        
+        #startStop.stopped {
+            background-color: #ff4444; /* 停止按钮为红色 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>随机学号生成器</h1>
+        
+        <div class="input-horizontal">
+            <div class="input-group">
+                <label class="input-label">start</label>
+                <input type="number" id="start" class="input-field" min="0" value="1">
+            </div>
+            <div class="input-group">
+                <label class="input-label">stop</label>
+                <input type="number" id="stop" class="input-field" min="1" value="50">
+            </div>
+            <div class="input-group">
+                <label class="input-label">step</label>
+                <input type="number" id="step" class="input-field" min="1" value="1">
+            </div>
+        </div>
+        
+        <div class="number-display" id="numberDisplay">?</div>
+        
+        <div class="buttons">
+            <button id="startStop" class="btn">开始</button>
+        </div>
+    </div>
+
+    <script>
+        const startInput = document.getElementById('start');
+        const stopInput = document.getElementById('stop');
+        const stepInput = document.getElementById('step');
+        const numberDisplay = document.getElementById('numberDisplay');
+        const startStopBtn = document.getElementById('startStop');
+        
+        let intervalId = null;
+        let isRunning = false;
+        let numbersArray = [];
+        
+        // 生成数字范围数组
+        function generateNumbersArray() {
+            const start = parseInt(startInput.value) || 0;
+            const stop = parseInt(stopInput.value) || 50;
+            const step = parseInt(stepInput.value) || 1;
+            
+            numbersArray = [];
+            for (let i = start; i <= stop; i += step) {
+                numbersArray.push(i);
+            }
+            
+            // 如果没有有效数字，显示错误
+            if (numbersArray.length === 0) {
+                numberDisplay.textContent = "无效范围";
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 获取随机数字
+        function getRandomNumber() {
+            const randomIndex = Math.floor(Math.random() * numbersArray.length);
+            return numbersArray[randomIndex];
+        }
+        
+        // 开始/停止随机生成
+        function toggleGenerator() {
+            if (!isRunning) {
+                // 验证输入并生成数字数组
+                if (!generateNumbersArray()) return;
+                
+                // 立即显示一个随机数
+                numberDisplay.textContent = getRandomNumber();
+                
+                // 开始定时切换数字
+                intervalId = setInterval(() => {
+                    numberDisplay.textContent = getRandomNumber();
+                }, 100);
+                
+                startStopBtn.textContent = '停止';
+                startStopBtn.classList.add('stopped');
+                isRunning = true;
+            } else {
+                clearInterval(intervalId);
+                startStopBtn.textContent = '开始';
+                startStopBtn.classList.remove('stopped');
+                isRunning = false;
+            }
+        }
+        
+        // 事件监听
+        startStopBtn.addEventListener('click', toggleGenerator);
+        
+        // 输入验证
+        [startInput, stopInput, stepInput].forEach(input => {
+            input.addEventListener('change', () => {
+                const value = parseInt(input.value) || 0;
+                const min = parseInt(input.min) || 0;
+                
+                if (value < min) {
+                    input.value = min;
+                }
+                
+                // 确保结束值不小于起始值
+                if (input.id === 'start' && parseInt(stopInput.value) < value) {
+                    stopInput.value = value;
+                }
+                
+                // 确保起始值不大于结束值
+                if (input.id === 'stop' && value < parseInt(startInput.value)) {
+                    startInput.value = value;
+                }
+                
+                // 确保步长不大于范围
+                if (input.id === 'step') {
+                    const range = parseInt(stopInput.value) - parseInt(startInput.value);
+                    if (value > range) {
+                        input.value = range > 0 ? range : 1;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

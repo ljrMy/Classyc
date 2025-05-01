@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>秒表计时器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+        
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-display {
+            font-size: 4rem;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+        
+        .time-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .time-input input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        #startStop {
+            background-color: #00C851; /* 开始按钮为绿色 */
+        }
+        
+        #startStop.stopped {
+            background-color: #ff4444; /* 停止按钮为红色 */
+        }
+        
+        #reset {
+            background-color: #333333;
+        }
+        
+        .colon {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* 隐藏音频元素 */
+        #alarm {
+            display: none;
+        }
+    </style>
+</head>
+·<body>
+    <div class="container">
+        <h1>秒表计时器</h1>
+        
+        <div class="time-input">
+            <input type="number" id="hours" min="0" max="99" value="00" placeholder="HH">
+            <span>:</span>
+            <input type="number" id="minutes" min="0" max="59" value="00" placeholder="MM">
+            <span>:</span>
+            <input type="number" id="seconds" min="0" max="59" value="00" placeholder="SS">
+        </div>
+        
+        <div class="timer-display">
+            <span id="displayHours">00</span>
+            <span class="colon">:</span>
+            <span id="displayMinutes">00</span>
+            <span class="colon">:</span>
+            <span id="displaySeconds">00</span>
+        </div>
+        
+        <div class="buttons">
+            <button id="startStop" class="btn">开始</button>
+            <button id="reset" class="btn">重置</button>
+        </div>
+        
+        <!-- 添加音频元素 -->
+        <audio id="alarm" src="./static/ringing.wav" preload="auto"></audio>
+    </div>
+
+    <script>
+        const hoursInput = document.getElementById('hours');
+        const minutesInput = document.getElementById('minutes');
+        const secondsInput = document.getElementById('seconds');
+        const displayHours = document.getElementById('displayHours');
+        const displayMinutes = document.getElementById('displayMinutes');
+        const displaySeconds = document.getElementById('displaySeconds');
+        const startStopBtn = document.getElementById('startStop');
+        const resetBtn = document.getElementById('reset');
+        const alarm = document.getElementById('alarm');
+        
+        let timer;
+        let isRunning = false;
+        let isCountdown = false;
+        let totalSeconds = 0;
+        let elapsedSeconds = 0;
+        
+        // 格式化数字为两位数
+        function formatTime(num) {
+            return num.toString().padStart(2, '0');
+        }
+        
+        // 播放提示音
+        function playAlarm() {
+            alarm.currentTime = 0; // 重置音频到开始
+            alarm.play().catch(e => console.log("音频播放失败:", e));
+        }
+        
+        // 更新时间显示
+        function updateDisplay() {
+            if (isCountdown && isRunning) {
+                const remainingSeconds = totalSeconds - elapsedSeconds;
+                const hours = Math.floor(remainingSeconds / 3600);
+                const minutes = Math.floor((remainingSeconds % 3600) / 60);
+                const seconds = remainingSeconds % 60;
+                
+                displayHours.textContent = formatTime(hours);
+                displayMinutes.textContent = formatTime(minutes);
+                displaySeconds.textContent = formatTime(seconds);
+                
+                if (remainingSeconds <= 0) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    startStopBtn.textContent = '开始';
+                    startStopBtn.classList.remove('stopped');
+                    isCountdown = false;
+                    playAlarm(); // 倒计时结束时播放提示音
+                }
+            } else if (!isRunning) {
+                // 当计时器未运行时，显示输入框的值
+                displayHours.textContent = formatTime(parseInt(hoursInput.value) || 0);
+                displayMinutes.textContent = formatTime(parseInt(minutesInput.value) || 0);
+                displaySeconds.textContent = formatTime(parseInt(secondsInput.value) || 0);
+            } else {
+                // 普通计时模式
+                const hours = Math.floor(elapsedSeconds / 3600);
+                const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+                const seconds = elapsedSeconds % 60;
+                
+                displayHours.textContent = formatTime(hours);
+                displayMinutes.textContent = formatTime(minutes);
+                displaySeconds.textContent = formatTime(seconds);
+            }
+        }
+        
+        // 开始/停止计时
+        function toggleTimer() {
+            if (!isRunning) {
+                // 检查是否是倒计时
+                const hours = parseInt(hoursInput.value) || 0;
+                const minutes = parseInt(minutesInput.value) || 0;
+                const seconds = parseInt(secondsInput.value) || 0;
+                
+                totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                isCountdown = totalSeconds > 0;
+                
+                if (isCountdown) {
+                    elapsedSeconds = 0;
+                }
+                
+                timer = setInterval(() => {
+                    elapsedSeconds++;
+                    updateDisplay();
+                }, 1000);
+                
+                startStopBtn.textContent = '停止';
+                startStopBtn.classList.add('stopped');
+                isRunning = true;
+            } else {
+                clearInterval(timer);
+                startStopBtn.textContent = '开始';
+                startStopBtn.classList.remove('stopped');
+                isRunning = false;
+            }
+        }
+        
+        // 重置计时器
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            isCountdown = false;
+            elapsedSeconds = 0;
+            
+            hoursInput.value = '00';
+            minutesInput.value = '00';
+            secondsInput.value = '00';
+            
+            displayHours.textContent = '00';
+            displayMinutes.textContent = '00';
+            displaySeconds.textContent = '00';
+            
+            startStopBtn.textContent = '开始';
+            startStopBtn.classList.remove('stopped');
+            
+            // 停止音频
+            alarm.pause();
+            alarm.currentTime = 0;
+        }
+        
+        // 输入验证和显示更新
+        function validateInput(input, max) {
+            let value = parseInt(input.value) || 0;
+            if (value < 0) value = 0;
+            if (value > max) value = max;
+            input.value = formatTime(value);
+            
+            // 更新显示区域
+            if (!isRunning) {
+                updateDisplay();
+            }
+        }
+        
+        // 事件监听
+        startStopBtn.addEventListener('click', toggleTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        
+        hoursInput.addEventListener('input', () => validateInput(hoursInput, 99));
+        minutesInput.addEventListener('input', () => validateInput(minutesInput, 59));
+        secondsInput.addEventListener('input', () => validateInput(secondsInput, 59));
+        
+        // 初始化
+        hoursInput.value = '00';
+        minutesInput.value = '00';
+        secondsInput.value = '00';
+        updateDisplay();
+    </script>
+</body>
+</html>
