@@ -134,7 +134,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-*.html linguist-language=javascript
-*.css linguist-language=javascript
-*.js linguist-language=javascript
