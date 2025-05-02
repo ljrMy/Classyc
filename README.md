@@ -2,6 +2,7 @@
 > 暂时作为测试版发布
 
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue)](https://github.com/ljrMy/Classyc/blob/master/LICENSE) ![POWERED](https://img.shields.io/badge/Powered_by-Electron-green) ![VERSION](https://img.shields.io/badge/version-0%2e1%2e0-orange)
+
 这是一个简洁、方便的课程工具软件
 
 有以下功能
