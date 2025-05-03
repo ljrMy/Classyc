@@ -1,4 +1,4 @@
-const {app,BrowserWindow,screen,ipcMain} = require('electron');
+const {app,BrowserWindow,screen,ipcMain,Menu,Tray} = require('electron');
 const {exec}=require("child_process")
 var win=undefined;
 
@@ -32,6 +32,9 @@ ipcMain.on('set-ignore', (event, ignore) => {
   if(ignore) win.setIgnoreMouseEvents(true,{forward:true});
   else win.setIgnoreMouseEvents(false);
 })
-ipcMain.on("helo",(event)=>{
-  console.log(1)
+ipcMain.on("log",(event,text)=>{
+  console.log(text)
+})
+ipcMain.on("open-dir",(event,dir)=>{
+  exec(`start ${dir}`)
 })

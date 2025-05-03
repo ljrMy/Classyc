@@ -1,4 +1,5 @@
-import {weather_id, timetable, new_timetable, goal_date, goal_date_name} from "./const.js"
+import {weather_id, timetable, new_timetable, goal_date, goal_date_name, timetable_config} from "./const.js"
+const {ipcRenderer}=require("electron");
 
 document.getElementById("day").innerHTML=Date().split(" ")[0].toUpperCase();
 
@@ -29,6 +30,12 @@ for(let group of timetable_groups){
         let timetable_lesson_element=document.createElement("span");
         timetable_lesson_element.className="lesson app-block";
         timetable_lesson_element.innerHTML=lesson;
+        if(Object.keys(timetable_config).includes(lesson)){
+            timetable_lesson_element.style.color=timetable_config[lesson].color;
+            timetable_lesson_element.ondblclick=()=>{
+                ipcRenderer.send("open-dir",timetable_config[lesson].path)
+            }
+        }
         timetable_group_element.appendChild(timetable_lesson_element);
     }
     document.getElementById("timetable").appendChild(timetable_group_element)

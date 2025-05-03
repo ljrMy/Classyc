@@ -48,6 +48,7 @@ body{
 }
 #timetable{
     font-size: 0;
+    font-family: Youyuan;
 }
 .timetable-group,.lesson{
     height: 50px;
