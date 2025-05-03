@@ -5,7 +5,7 @@
 这是一个简洁、方便的课程工具软件
 
 有以下功能
-![./static/layer.jpg](界面)
+![界面](https://github.com/ljrMy/Classyc/blob/main/static/layer.jpg?raw=true)
 1. 查看星期与天气
 2. 查看课表
 3. 自带课堂工具——秒表和随机学号生成器
