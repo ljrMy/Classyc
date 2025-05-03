@@ -1,10 +1,14 @@
 # Classyc - 简课
 > 暂时作为测试版发布
 
-[![LICENSE](https://img.shields.io/badge/license-MIT-blue)](https://github.com/ljrMy/Classyc/blob/master/LICENSE) ![POWERED](https://img.shields.io/badge/Powered_by-Electron-green) ![VERSION](https://img.shields.io/badge/version-0%2e1%2e0-orange)
+[![LICENSE](https://img.shields.io/badge/license-MIT-blue)](https://github.com/ljrMy/Classyc/blob/master/LICENSE) ![POWERED](https://img.shields.io/badge/Powered_by-Electron-green) ![VERSION](https://img.shields.io/badge/version-0%2e1%2e1-orange)
 这是一个简洁、方便的课程工具软件
 
-有以下功能
+## 版本更新
+- v0.1.0 测试版更新，暂且有天气预报、课表、倒数日、课堂工具功能
+- v0.1.1 增加课表颜色渲染，双击课程可打开对应路径（网站）
+
+## 功能结束
 ![界面](https://github.com/ljrMy/Classyc/blob/main/static/layer.jpg?raw=true)
 1. 查看星期与天气
 2. 查看课表
