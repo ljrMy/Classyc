@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./my-icon/style.css">
+    <link rel="stylesheet" href="./iconfont/style.css">
 </head>
 <body>
     <div id="nav">
         <div id="calendar" class="app-block app-component">
             <span id="day"></span>
             <span id="weather-data">
-                <span id="weather"><img src="http://image.nmc.cn/assets/img/w/40x40/3/0.png"></span>
+                <span id="weather"><img src="http://image.nmc.cn/assets/img/w/40x40/3/0.png" id="weather_icon"></span>
                 <span id="temperature">30℃</span>
-            </span>
+            </span>1
         </div>
         <div id="timetable" class="app-component">
             <!-- <span class="timetable-group">
@@ -41,6 +41,7 @@
     <script src="./js/script.js" type="module"></script>
     <script type="module">
         const {ipcRenderer}=require("electron");
+        import {weather_id} from './js/const.js'
         function matchElement(parent,child){
             parent=document.querySelectorAll(parent);
             child=(typeof child==="string")?document.querySelector(child):child;
