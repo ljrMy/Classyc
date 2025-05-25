@@ -2,8 +2,8 @@
   "name": "Classyc",
   "productName": "Classyc",
   "executableName": "Classyc",
-  "version": "0.1.1",
-  "description": "Hello World!",
+  "version": "0.1.3-beta",
+  "description": "A nice class tool",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

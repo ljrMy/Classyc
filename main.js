@@ -16,11 +16,13 @@ const createWindow = () => {
     alwaysOnTop: true,
     maximizable: false,
     minimizable: false,
+    resizable: false,
     skipTaskbar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: false,
+      devTools: false
     }
   })
   win.loadFile('./index.html');
@@ -52,7 +54,6 @@ app.whenReady().then(() => {
   createTray();
 })
 
-
 ipcMain.on('set-ignore', (event, ignore) => {
   if(ignore) win.setIgnoreMouseEvents(true,{forward:true});
   else win.setIgnoreMouseEvents(false);
@@ -63,3 +64,8 @@ ipcMain.on("log",(event,text)=>{
 ipcMain.on("open-dir",(event,dir)=>{
   exec(`start ${dir}`)
 })
+
+const gotTheLock=app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit()
+}
